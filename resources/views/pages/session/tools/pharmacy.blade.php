@@ -5,7 +5,8 @@
 $(document).ready(function(){
 	$( "#m_date" ).datepicker({
 			changeMonth: true,
-			changeYear: true
+			changeYear: true,
+			dateFormat: 'dd-mm-yy'
 		});
     
    $("#FSForm").submit (function (){
@@ -17,8 +18,13 @@ $(document).ready(function(){
 		});
 	$("#county").change(function() {
 		$.get('../facility/loadsubcat/' + $(this).val(), function(data) {
+			$("#subcounty").empty();
+            $("#subcounty").append($('<option/>', {text : 'Select Sub-County' }));
+            $("#m_facility").empty();
+            $('#m_facility').append($('<option/>', {text : 'Select Facility' }));
+			
 			if (data != null) {
-				$("#subcounty").empty();
+				
 				for (var i in data) {
 					var f = data[i];
 					
@@ -38,6 +44,7 @@ $(document).ready(function(){
 		$.get('../facility/loadfacility/' + $(this).val(), function(data) {
 			if (data != null) {
 				$("#m_facility").empty();
+				$('#m_facility').append($('<option/>', {text : 'Select Facility' }));
 				for (var i in data) {
 					var f = data[i];
 					
@@ -154,6 +161,12 @@ function calcscore(){
            <div id="taccb">
                <div id="taccbi">  &gt; </div>
                    {!!HTML::link('/session-tool/4','Nutrition')!!} 
+           </div>
+    </h4>
+	<h4 class="accordion-toggle" >
+           <div id="taccb">
+               <div id="taccbi">  &gt; </div>
+                   {!!HTML::link('/session-tool/5','Pharmacy')!!} 
            </div>
     </h4>
      <h4 class="accordion-toggle" >

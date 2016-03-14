@@ -1,6 +1,133 @@
 @extends('formmaster')
 @section('form-name', 'Mentorship Session Tool')
+@section('inline-js')
+<script type="text/javascript">
+$(document).ready(function(){
+	
+		$( "#m_date" ).datepicker({
+			changeMonth: true,
+			changeYear: true,
+			dateFormat: 'dd-mm-yy'
+		});
+    
+    $("#FSForm").submit (function (){
+         return validateForm ();
+        });
+	$(".multiple_choice").change(function(){
+        calcscore()
+	});
+	$("#county").change(function() {
+		$.get('../facility/loadsubcat/' + $(this).val(), function(data) {
+			$("#subcounty").empty();
+            $("#subcounty").append($('<option/>', {text : 'Select Sub-County' }));
+            $("#m_facility").empty();
+            $('#m_facility').append($('<option/>', {text : 'Select Facility' }));
+			
+			if (data != null) {
+				
+				for (var i in data) {
+					var f = data[i];
+					
+						$('#subcounty').append($('<option/>', { 
+        				value: f.id,
+        				text : f.name 
+    					}));
+					}
+			}
+		});	
+		
+    });
 
+/*adding functionality for sub-county drop-down*/
+
+	$("#subcounty").change(function() {
+		$.get('../facility/loadfacility/' + $(this).val(), function(data) {
+			if (data != null) {
+				$("#m_facility").empty();
+				$('#m_facility').append($('<option/>', {text : 'Select Facility' }));
+				for (var i in data) {
+					var f = data[i];
+					
+						$('#m_facility').append($('<option/>', { 
+        				value: f.id,
+        				text : f.name 
+    					}));
+					}
+			}
+		});	
+		
+    });
+});	
+	function validateForm () {
+          var drpDownNames = ['mentor','mentee','subcounty','m_facility'];
+            var txtAndTxtAreaIds = ['m_date','self_reported_gap','previous_session_gap','other_gap','session_objectives','mentee_strength','mentee_improvement_areas','session_comments'];
+            var sessionIndFieldNames = ['ind_1','ind_2','ind_3','ind_4','ind_22','ind_23','ind_24','ind_25','ind_26','ind_27','ind_28','cme_participation','mdt_participation'];
+            var submit = true;
+            
+            for (var drpInd in drpDownNames) {
+                var drpName = drpDownNames[drpInd];
+                $("#"+drpName).css('border', function() {
+                return $(this).val() == '' ? '1px solid red' : '';
+                
+                if($(this).val() == '') { submit = false;}
+                
+                });
+               
+            }
+            for (var ind in sessionIndFieldNames) {
+                var indName = sessionIndFieldNames[ind];
+                if(!$('input[name='+ indName +']:checked').val()) {
+                   $('input[name='+ indName + ']').parent().css({"background-color": "red"});
+                    submit = false;
+                }
+                
+            }
+            
+            for (var txtF in txtAndTxtAreaIds) {
+                var txtFid = txtAndTxtAreaIds[txtF];
+                $("#"+txtFid).css('border', function() {
+                return $(this).val() == '' ? '1px solid red' : '';
+                
+                if($(this).val() == '') { submit = false;}
+            
+                });
+            }
+            if (!submit) {
+                $('#msg_container').html('Please fill all required fields before submitting form');
+            }
+            return submit;
+    }
+function disablefields() {
+         if (document.getElementById('cme_yes').checked == 1) { 
+              document.getElementById('cme_topic').disabled=false; 
+              document.getElementById('cme_presenter').disabled=false; 
+              document.getElementById('cme_topic').value='';
+              document.getElementById('cme_presenter').value=''; 
+         } else { 
+              document.getElementById('cme_topic').disabled=true; 
+              document.getElementById('cme_presenter').disabled=true; 
+              document.getElementById('cme_topic').value='';
+              document.getElementById('cme_presenter').value='';
+         } 
+     }
+function calcscore(){
+    var score = 0;
+    $(".multiple_choice:checked").each(function(){
+        if(parseInt($(this).val(),10)==88){
+            score+= 0;
+        }
+        else{
+        score+=parseInt($(this).val(),10);
+        }
+    });
+    $("input[name=totalScore]").val(score)
+}
+
+ 
+    
+
+</script>
+@stop
 @section('main-nav')
     <li>{!!HTML::link('dash-board','Home')!!}</li>
     <li>{!!HTML::link('my-profile','My Profile')!!}</li>
@@ -265,10 +392,9 @@
 </div>
 
 <!-- END_ITEMS -->
-<input type="hidden" name="EParam" value="FzpUCZwnDno=" />
 <div class="outside_container">
-<!--<div class="buttons_reverse"><input type="submit" name="Submit" value="Submit" class="submit_button" id="FSsubmit" /></div></div>-->
-
+<div class="buttons_reverse"><input type="submit" name="Submit" value="Save" class="submit_button" id="FSsubmit" /></div>
+</div>
 </form>
 
 @stop

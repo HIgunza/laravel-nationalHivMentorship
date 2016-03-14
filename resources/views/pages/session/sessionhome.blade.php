@@ -71,6 +71,7 @@
                 <td>{{$ms->mentee->person->first_name}} {{$ms->mentee->person->last_name}}</td>
                 <td>{{$ms->facility}}</td>
                 <td><a href="session/{{$ms->session_id}}">View Tool</a></td>
+				
             </tr>
         @endforeach
         </tbody>
